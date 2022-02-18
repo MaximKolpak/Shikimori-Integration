@@ -12,6 +12,6 @@
 
 # Shikomiri-Integration
 
-<img src="hhttps://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/poster.png" align="right"
+<img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/poster.png" align="right"
      alt="Poster Integration Web" width="253" >
 Интеграция сайта [Shikimori](https://shikimori.one/) на сайт Аниме [YummyAnime](https://yummyanime.club). Скрипт помогает вести список просмотренных аниме. Этот список находится на сайте Shikimori
