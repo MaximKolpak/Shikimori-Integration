@@ -35,3 +35,4 @@
 # Скриншоты функция
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/episodes.png" />
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/login.png" />
+<img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/score.png" />
