@@ -11,4 +11,7 @@
 </p>
 
 # Shikomiri-Integration
+
+<img src="https://raw.githubusercontent.com/MaximKolpak/TunimeScript/main/resources/Icon.png" align="right"
+     alt="Poster Integration Web" width="253" >
 Интеграция сайта [Shikimori](https://shikimori.one/) на сайт Аниме [YummyAnime](https://yummyanime.club). Скрипт помогает вести список просмотренных аниме. Этот список находится на сайте Shikimori
