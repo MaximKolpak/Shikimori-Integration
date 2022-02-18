@@ -31,3 +31,6 @@
     - Отоброжать на каком епизоде остановились
 
 Все эти функции будут доступны после авторизации Скрипта в [Shikimori](https://shikimori.one/)
+
+# Скриншоты функция
+<img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/episodes.png" />
