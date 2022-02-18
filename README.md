@@ -32,6 +32,18 @@
 
 Все эти функции будут доступны после авторизации Скрипта в [Shikimori](https://shikimori.one/)
 
+Скрипт автоматически отмечает просмотренные епизоды в [Shikimori](https://shikimori.one/)
+
+# Поддержка
+
+* [Typermonkey]("https://www.tampermonkey.net/") Windows - Firefox
+* [Greasemonkey]("https://www.greasespot.net/") Windows - Firefox
+* [Userscripts]("https://github.com/quoid/userscripts") IOS - Safari
+
+Этот скрипт может работать там где поддержуют следующие функции: ```GM_addStyle```, ```GM.getValue```, ```GM.setValue```, ```GM.xmlHttpRequest```, а также возможность подключениие сторонних библиотек JS, которые испозьзует скрипт [Jqery] 
+
+```// @require https://code.jquery.com/jquery-3.6.0.min.js```
+
 # Скриншоты функция
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/episodes.png" />
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/login.png" />
