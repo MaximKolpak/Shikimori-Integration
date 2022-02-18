@@ -38,7 +38,7 @@
 
 * [Typermonkey]("https://www.tampermonkey.net/") Windows - Firefox
 * [Greasemonkey]("https://www.greasespot.net/") Windows - Firefox
-* [Userscripts]("https://github.com/quoid/userscripts") IOS - Safari
+* [Userscripts]("https://github.com/quoid/userscripts") IOS (15) - Safari
 
 Этот скрипт может работать там где поддержуют следующие функции: ```GM_addStyle```, ```GM.getValue```, ```GM.setValue```, ```GM.xmlHttpRequest```, а также возможность подключениие сторонних библиотек JS, которые испозьзует скрипт [Jqery] 
 
