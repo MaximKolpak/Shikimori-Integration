@@ -23,3 +23,4 @@
 Так как имена могут отличатся в [Shikimori](https://shikimori.one/) от [YummyAnime](https://yummyanime.club) пришлось сделать подбор аниме по параметрам, на сайте показывается вероятность совпадения аниме по параметрам
 
 - Показывает рейтинг аниме из [Shikimori](https://shikimori.one/)
+- Возможность авторизировать пользователя из [Shikimori](https://shikimori.one/) в [YummyAnime](https://yummyanime.club)
