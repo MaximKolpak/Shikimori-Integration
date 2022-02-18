@@ -18,9 +18,12 @@
 
 ## Возможности скрипта
 
-- Поиск аниме в [Shikimori](https://shikimori.one/) из сайта [YummyAnime](https://yummyanime.club)
+* Поиск аниме в [Shikimori](https://shikimori.one/) из сайта [YummyAnime](https://yummyanime.club)
 
 Так как имена могут отличатся в [Shikimori](https://shikimori.one/) от [YummyAnime](https://yummyanime.club) пришлось сделать подбор аниме по параметрам, на сайте показывается вероятность совпадения аниме по параметрам
 
-- Показывает рейтинг аниме из [Shikimori](https://shikimori.one/)
-- Возможность авторизировать пользователя из [Shikimori](https://shikimori.one/) в [YummyAnime](https://yummyanime.club)
+* Показывает рейтинг аниме из [Shikimori](https://shikimori.one/)
+* Возможность авторизировать пользователя из [Shikimori](https://shikimori.one/) в [YummyAnime](https://yummyanime.club)
+    - Добавить аниме в список
+    - Изменение статуса аниме аниме
+    - Отметка просмотренных епизодов 
