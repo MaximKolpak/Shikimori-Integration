@@ -15,3 +15,9 @@
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/poster.png" align="right"
      alt="Poster Integration Web" width="253" >
 Интеграция сайта [Shikimori](https://shikimori.one/) на сайт Аниме [YummyAnime](https://yummyanime.club). Скрипт помогает вести список просмотренных аниме. Этот список находится на сайте Shikimori
+
+## Возможности скрипта
+
+- Поиск аниме в [Shikimori](https://shikimori.one/) из сайта [YummyAnime](https://yummyanime.club)
+
+    Так как имена могут отличатся в [Shikimori](https://shikimori.one/) от [YummyAnime](https://yummyanime.club) пришлось сделать подбор аниме по параметрам, на сайте показывается вероятность совпадения аниме по параметрам
