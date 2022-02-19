@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shikimori Integration
 // @namespace    UserScripts
-// @version      1.0
+// @version      1.1
 // @description  helps to maintain a list of watched TV shows, with a nice visual part
 // @author       Anoncer (https://github.com/MaximKolpak)
 // @match        https://yummyanime.club/*
@@ -294,6 +294,17 @@
                         this.#showedVieo.push(element);
                         $(element).addClass("shikimori-watch");
                     }
+                });
+            }
+        }
+
+        SearchAnimeAsync(name = ""){
+            if(name.length > 0){
+                return new Promise((resolve)=>{
+                    $.ajax({
+                        url : `https://yummyanime.club/get-search-list?word=${name}`,
+                        method : "GET"
+                    }).always((data, status)=>resolve(data, status));
                 });
             }
         }
@@ -610,7 +621,40 @@
 
                 //Subscribe for change video number and write for shikimori
                 UpdateWatchEpisode();
+                //Subcribe from search anime focus
+                SearchAnime();
             }
+        });
+    }
+
+    let searchResult = false;
+
+    function SearchAnime(){
+        $(`div.search-block-wrapper:nth-child(1) > form:nth-child(1) > input:nth-child(1)`).click( async ()=>{
+            if(searchResult){
+                return;
+            }
+            searchResult = true;
+            let data = await shikimori.Request.GETasync(`/api/v2/user_rates?user_id=${user.id}&status=planned&limit=5`);
+            $(`div.search-block-wrapper:nth-child(1) > div:nth-child(2)`).addClass(`open`);
+            for (let index = 0; index < data.length; index++) {
+                let a = await shikimori.Request.GETasync(`/api/animes/${data[index].target_id}`);
+                let y = await yummy.SearchAnimeAsync(a.russian);
+                if(y.animes){
+                    $(`div.search-block-wrapper:nth-child(1) > div:nth-child(2)`).append(`<a href="https://yummyanime.club/catalog/item/${y.animes.data[0].alias}" class="shikimori-search-result" style="background: #1a1a1a;color: #fff;border-radius: 3px;border: 1px solid #1f539f; margin-bottom: 3px;">${a.russian}</a>`);
+                }
+                await sleep(300);
+            }
+        });
+        $(`.content-page`).click(()=>{
+            if(!searchResult){
+                return;
+            }
+            searchResult = false;
+            $(`div.search-block-wrapper:nth-child(1) > div:nth-child(2)`).removeClass(`open`);
+            $(`.shikimori-search-result`).toArray().forEach((e)=>{
+                $(e).remove();
+            });
         });
     }
 

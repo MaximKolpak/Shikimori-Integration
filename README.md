@@ -1,6 +1,6 @@
 <p align="left">
     <a href="https://github.com/MaximKolpak/TunimeScript">
-        <img src="https://img.shields.io/badge/version-1.0-green.svg" />
+        <img src="https://img.shields.io/badge/version-1.1-green.svg" />
     </a>
     <a href="https://github.com/quoid/userscripts">
         <img src="https://img.shields.io/badge/GitHub-userscripts-lightgrey?style=flat&logo=github" />
@@ -29,6 +29,7 @@
     - Изменение статуса аниме аниме
     - Отметка просмотренных епизодов 
     - Отоброжать на каком епизоде остановились
+    - В поиске отображать аниме в списке ("Запланировано")
 
 Все эти функции будут доступны после авторизации Скрипта в [Shikimori](https://shikimori.one/)
 
