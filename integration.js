@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shikimori Integration
 // @namespace    UserScripts
-// @version      1.1
+// @version      1.2
 // @description  helps to maintain a list of watched TV shows, with a nice visual part
 // @author       Anoncer (https://github.com/MaximKolpak)
 // @match        https://yummyanime.club/*
@@ -12,10 +12,12 @@
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         https://www.google.com/s2/favicons?domain=yummyanime.club
 // @updateURL    https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/integration.js
+// @downloadURL  https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/integration.js
+// @supportURL   https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/integration.js
 // ==/UserScript==
 /// <reference path="typings/globals/jquery/index.d.ts" />
 
-(function() {
+(function () {
     'use strict';
 
     const shikimori = {
@@ -44,49 +46,49 @@
                     method: "GET"
                 }).done((data) => func(data));
             },
-            GETasync: async(url) => {
-                return new Promise((resolve) =>{
+            GETasync: async (url) => {
+                return new Promise((resolve) => {
                     $.ajax({
                         url: shikimori.base_url + url,
                         method: "GET"
                     }).done((data) => resolve(data));
                 });
             },
-            POST: (url="/", data={}, func = (data, status)=>{console.log(status, data)}) => {
+            POST: (url = "/", data = {}, func = (data, status) => { console.log(status, data) }) => {
                 $.ajax({
                     url: shikimori.base_url + url,
                     method: "POST",
-                    beforeSend: function(request){
+                    beforeSend: function (request) {
                         request.setRequestHeader('User-Agent', shikimori.user_agent);
                     },
                     data: data
-                }).always(function(data, status){func(data, status)});
+                }).always(function (data, status) { func(data, status) });
             }
         },
 
         User: {
-            GET: function (url = "/", func = (data, status)=>{console.log(data, status)}){
+            GET: function (url = "/", func = (data, status) => { console.log(data, status) }) {
                 $.ajax({
                     url: shikimori.base_url + url,
                     method: "GET",
-                    beforeSend: function(request){
+                    beforeSend: function (request) {
                         request.setRequestHeader('User-Agent', shikimori.user_agent);
                         request.setRequestHeader('Authorization', 'Bearer ' + shikimori.user_data.access);
                     }
-                }).always(function(data, status){func(data, status)});
+                }).always(function (data, status) { func(data, status) });
             },
-            POST: function (url = "/", data = {}, func = (data, status) => {console.log(data, status)}){
+            POST: function (url = "/", data = {}, func = (data, status) => { console.log(data, status) }) {
                 $.ajax({
                     url: shikimori.base_url + url,
                     method: "POST",
-                    beforeSend: function(request){
+                    beforeSend: function (request) {
                         request.setRequestHeader('User-Agent', shikimori.user_agent);
                         request.setRequestHeader('Authorization', 'Bearer ' + shikimori.user_data.access);
                     },
                     data: data
-                }).always(function(data, status){func(data, status)});
+                }).always(function (data, status) { func(data, status) });
             },
-            DELETE: function(url = "/", func = (response) = {}){
+            DELETE: function (url = "/", func = (response) = {}) {
                 GM.xmlHttpRequest({
                     method: "DELETE",
                     url: shikimori.base_url + url,
@@ -95,10 +97,10 @@
             }
         },
 
-        Authorizate: async function(){
-            if(!this.authorization){
+        Authorizate: async function () {
+            if (!this.authorization) {
                 this.user_data = await GM.getValue(this.key_value, this.user_data);
-                if(this.user_data.access == "" || this.user_data.refresh == ""){
+                if (this.user_data.access == "" || this.user_data.refresh == "") {
                     window.open(this.auth_url);
                     let code = prompt("Please enter Token from copy", "Token");
                     this.Request.POST("/oauth/token", {
@@ -108,21 +110,21 @@
                         code: code,
                         redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
                     }, (data, status) => {
-                        if(status == "success"){
+                        if (status == "success") {
                             this.user_data.access = data.access_token;
                             this.user_data.refresh = data.refresh_token;
                             this.user_data.created_at = data.created_at;
                             this.user_data.expires_in = data.expires_in;
                             GM.setValue(this.key_value, this.user_data);
                             this.authorization = true;
-                        }else{
+                        } else {
                             this.authorization = false;
                             //console.log(data); // Show Error IN Console
                         }
 
                         this.Events.Auth.Event(this.authorization);
                     });
-                }else{
+                } else {
                     //Login App
                     this.Request.POST("/oauth/token", {
                         grant_type: "refresh_token",
@@ -130,7 +132,7 @@
                         client_secret: this.client_secret,
                         refresh_token: this.user_data.refresh
                     }, (data, status) => {
-                        if(status == "success"){
+                        if (status == "success") {
                             this.user_data.access = data.access_token;
                             this.user_data.refresh = data.refresh_token;
                             this.user_data.created_at = data.created_at;
@@ -144,20 +146,20 @@
             }
         },
 
-        TryAuthorizate: async function(){
-            if(!this.authorization){
-                this.user_data =  await GM.getValue(this.key_value, this.user_data);
-                if(this.user_data.access == "" || this.user_data.refresh == ""){
+        TryAuthorizate: async function () {
+            if (!this.authorization) {
+                this.user_data = await GM.getValue(this.key_value, this.user_data);
+                if (this.user_data.access == "" || this.user_data.refresh == "") {
                     //console.log(this.user_data);
                     this.Events.Auth.Event(false);
 
-                }else{
+                } else {
                     this.Events.Auth.Event(true);
                 }
             }
         },
 
-        Logout: async function(){
+        Logout: async function () {
             this.user_data = {
                 access: "",
                 refresh: "",
@@ -170,22 +172,22 @@
 
         Events: {
             Auth: {
-                function : [],
-                Subscribe : (e) =>{
+                function: [],
+                Subscribe: (e) => {
                     shikimori.Events.Auth.function.push(e);
                 },
-                Event : (e) => {
+                Event: (e) => {
                     shikimori.Events.Auth.function.forEach(element => {
                         element(e)
                     });
-                } 
+                }
             }
         }
     }
 
-    class Yummyanime{
+    class Yummyanime {
 
-        constructor(){
+        constructor() {
         }
 
         //Getters
@@ -193,56 +195,65 @@
         /**
          * Return bool if this page from anime
          */
-        get IsPageAnime(){
+        get IsPageAnime() {
             return this.CheckPageFromAnime();
         }
 
         /**
          * Return anime name
          */
-        get Name(){
+        get Name() {
             return $('.content-page > h1:nth-child(8)').html().trim();
         }
 
         /**
          * Return type anime
          */
-        get Type(){
+        get Type() {
             let type = this.SearchTag("Тип:").html().replace("<span>Тип:</span> ", "");
-            return (type == "Сериал" || type == "Малометражный сериал")? ("tv") : ((type == "Полнометражный фильм" || type == "Короткометражный фильм")?("movie"):((type == "Special")?("special"):((type == "OVA")?("ova"):((type == "ONA")?("ona"):("")))));
+            return (type == "Сериал" || type == "Малометражный сериал") ? ("tv") : ((type == "Полнометражный фильм" || type == "Короткометражный фильм") ? ("movie") : ((type == "Special") ? ("special") : ((type == "OVA") ? ("ova") : ((type == "ONA") ? ("ona") : ("")))));
         }
 
         /**
          * Return status anime
          */
-        get Status(){
+        get Status() {
             let status = $(`.badge`).html();
-            return (status == "вышел")? ("released"):((status == "онгоинг")?("ongoing"):((status == "анонс")?("anons"):("")));
+            return (status == "вышел") ? ("released") : ((status == "онгоинг") ? ("ongoing") : ((status == "анонс") ? ("anons") : ("")));
         }
 
-        get Episodes(){
-            try{
+        get Episodes() {
+            try {
                 let episodes = this.SearchTag("Серии:").html().replace("<span>Серии:</span>", "");
                 return parseInt(episodes);
-            }catch{
+            } catch {
                 return 1;
+            }
+        }
+
+        get Year() {
+            try {
+                let year = this.SearchTag("Год: ").html().replace("<span>Год: </span>", "");
+                return year;
+            } catch {
+                return undefined
             }
         }
 
         /**
          * Get Alternative name for anime
          */
-        get Names(){
+        get Names() {
             $(`.more-alt-names`).remove();
             const namesItems = document.querySelectorAll('.alt-names-list > li');
             return Array.from(namesItems).map(_ => _.innerHTML);
         }
 
-        get Episode(){
+        get Episode() {
             let btn = $(`.video-button.active`);
-            if(btn){
+            if (btn) {
                 return parseInt($(`.video-button.active`).html());
-            }else{
+            } else {
                 return 0;
             }
         }
@@ -253,11 +264,11 @@
          * Checks if the page is an anime cartoon
          * @returns bool param if this page anime
          */
-        CheckPageFromAnime(){
+        CheckPageFromAnime() {
             let path = window.location.pathname.split("/");
-            if(path.includes("catalog") && path.includes("item")){
+            if (path.includes("catalog") && path.includes("item")) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
@@ -267,9 +278,9 @@
          * @param {String} search Name Tag 
          * @returns DOOM element
          */
-        SearchTag(search){
-            for(let index = 1; index < $('.content-main-info')[0].childElementCount + 1; index++){
-                if($(`.content-main-info > li:nth-child(${index}) > span:nth-child(1)`).html() == search){
+        SearchTag(search) {
+            for (let index = 1; index < $('.content-main-info')[0].childElementCount + 1; index++) {
+                if ($(`.content-main-info > li:nth-child(${index}) > span:nth-child(1)`).html() == search) {
                     return $(`.content-main-info > li:nth-child(${index})`);
                 }
             }
@@ -278,19 +289,19 @@
 
         #showedVieo = [];
 
-        SetVideoShow(id = 0){
-            if(id == 0){
+        SetVideoShow(id = 0) {
+            if (id == 0) {
                 return;
             }
 
             let videoall = $(`.video-block .video-button`).toArray();
-            if(videoall.length != 0){
-                if(this.#showedVieo.length != 0){
-                    this.#showedVieo.forEach((e)=>{$(e).removeClass("shikimori-watch");});
+            if (videoall.length != 0) {
+                if (this.#showedVieo.length != 0) {
+                    this.#showedVieo.forEach((e) => { $(e).removeClass("shikimori-watch"); });
                 }
                 this.#showedVieo = [];
-                videoall.forEach((element)=>{
-                    if($(element).data("id") == id){
+                videoall.forEach((element) => {
+                    if ($(element).data("id") == id) {
                         this.#showedVieo.push(element);
                         $(element).addClass("shikimori-watch");
                     }
@@ -298,13 +309,13 @@
             }
         }
 
-        SearchAnimeAsync(name = ""){
-            if(name.length > 0){
-                return new Promise((resolve)=>{
+        SearchAnimeAsync(name = "") {
+            if (name.length > 0) {
+                return new Promise((resolve) => {
                     $.ajax({
-                        url : `https://yummyanime.club/get-search-list?word=${name}`,
-                        method : "GET"
-                    }).always((data, status)=>resolve(data, status));
+                        url: `https://yummyanime.club/get-search-list?word=${name}`,
+                        method: "GET"
+                    }).always((data, status) => resolve(data, status));
                 });
             }
         }
@@ -313,13 +324,13 @@
 
         #eventsChangeVideo = [];
 
-        EventChangeVideo(func = (object) => {}){
+        EventChangeVideo(func = (object) => { }) {
             this.#eventsChangeVideo.push(func);
         }
 
-        StartEvents(){
+        StartEvents() {
             $(`.video-button`).click((eventObject) => {
-                this.#eventsChangeVideo.forEach((element)=>{
+                this.#eventsChangeVideo.forEach((element) => {
                     element(eventObject);
                 })
             })
@@ -357,32 +368,32 @@
             font-family: 'Roboto', sans-serif;
         }`,
 
-        Show: function (e, html = this.html){
+        Show: function (e, html = this.html) {
             $(`.top > div:nth-child(1) > div:nth-child(1)`).prepend(html);
             GM_addStyle(this.style);
-            if(e){
+            if (e) {
                 this.Control();
             }
         },
 
-        Control: function() {
-            $(`.login-shikimori`).click(()=>{
+        Control: function () {
+            $(`.login-shikimori`).click(() => {
                 shikimori.Authorizate();
             });
         },
 
-        MyFunction: function(e){
-            $(`.login-shikimori`).click(()=>{
+        MyFunction: function (e) {
+            $(`.login-shikimori`).click(() => {
                 e();
             });
         },
 
-        Dispose: function (e){
-            if(e){
+        Dispose: function (e) {
+            if (e) {
                 $(`.login-shikimori`).remove();
             }
         }
-        
+
     }
 
     const UserProfile = {
@@ -408,39 +419,39 @@
 
         styleadded: false,
 
-        Show : function(html = this.html, style = this.style){
+        Show: function (html = this.html, style = this.style) {
             $(`.poster-block`).append(html);
-            if(!this.styleadded){
+            if (!this.styleadded) {
                 GM_addStyle(style);
                 this.styleadded = true;
             }
         },
 
-        Name : function(name){
+        Name: function (name) {
             $(`.shikimori-welcome > div:nth-child(1) > span:nth-child(1)`).html(name);
         }
     }
 
     const AnimeStatus = {
-        html : {
-            AddToList : `<div class="shikimori-add-anime"><div><span>Добавить в список</span><span>Добавит в список "Посмотрю"</span></div></div>`,
-            StartWatch : `<div class="shikimori-start-watch"><div><span>Начать смотреть</span><span>Переместит в список "Смотрю"</span></div></div>`,
-            Remove : `<div class="shikimori-remove"><div><span>Удалить</span><span>Удаляет из спика</span></div></div>`,
-            Completed : `<div class="shikimori-completed"><div><span>Просмотренно</span><span>Переместит в список "Просмотренно"</span></div></div>`,
-            Dropped : `<div class="shikimori-dropped"><div><span>Забросить</span><span>Переместить в список "Заброшенные"</span></div></div>`,
-            Rewatch : `<div class="shikimori-rewatch"><div><span>Пересмотреть</span><span>Переместить в список “Пересмотреть”</span></div></div>`,
-            Info : `<div class="shikimori-info-status"><div><span></span><img src="https://raw.githubusercontent.com/MaximKolpak/TunimeScript/main/resources/status.png" alt="Status"></div></div>`,
-            maintags : {
-                addtolist : ".shikimori-add-anime",
-                startwatch : ".shikimori-start-watch",
-                remove : ".shikimori-remove",
-                completed : ".shikimori-completed",
-                dropped : ".shikimori-dropped",
-                rewatch : ".shikimori-rewatch",
-                info : ".shikimori-info-status"
+        html: {
+            AddToList: `<div class="shikimori-add-anime"><div><span>Добавить в список</span><span>Добавит в список "Посмотрю"</span></div></div>`,
+            StartWatch: `<div class="shikimori-start-watch"><div><span>Начать смотреть</span><span>Переместит в список "Смотрю"</span></div></div>`,
+            Remove: `<div class="shikimori-remove"><div><span>Удалить</span><span>Удаляет из спика</span></div></div>`,
+            Completed: `<div class="shikimori-completed"><div><span>Просмотренно</span><span>Переместит в список "Просмотренно"</span></div></div>`,
+            Dropped: `<div class="shikimori-dropped"><div><span>Забросить</span><span>Переместить в список "Заброшенные"</span></div></div>`,
+            Rewatch: `<div class="shikimori-rewatch"><div><span>Пересмотреть</span><span>Переместить в список “Пересмотреть”</span></div></div>`,
+            Info: `<div class="shikimori-info-status"><div><span></span><img src="https://raw.githubusercontent.com/MaximKolpak/TunimeScript/main/resources/status.png" alt="Status"></div></div>`,
+            maintags: {
+                addtolist: ".shikimori-add-anime",
+                startwatch: ".shikimori-start-watch",
+                remove: ".shikimori-remove",
+                completed: ".shikimori-completed",
+                dropped: ".shikimori-dropped",
+                rewatch: ".shikimori-rewatch",
+                info: ".shikimori-info-status"
             }
         },
-        style : `
+        style: `
         .shikimori-add-anime,
         .shikimori-start-watch,
         .shikimori-remove,
@@ -510,40 +521,40 @@
 
         styleadded: false,
 
-        Show : function(html = this.html.AddToList, style = this.style){
+        Show: function (html = this.html.AddToList, style = this.style) {
             $(`.marker`).remove();
             $(`.other-lists-container`).remove();
             $(`.content-img-block`).append(html);
 
-            if(!this.styleadded){
+            if (!this.styleadded) {
                 GM_addStyle(style);
                 this.styleadded = true;
             }
         },
 
-        Control : function(func = () => {}, tag = this.html.maintags.addtolist){
-            $(tag).click(()=>{func()});
+        Control: function (func = () => { }, tag = this.html.maintags.addtolist) {
+            $(tag).click(() => { func() });
         },
 
-        Dispose : function(tag = this.html.maintags.addtolist){
+        Dispose: function (tag = this.html.maintags.addtolist) {
             $(tag).remove();
         },
 
-        ShowStatus : function(status = "", html = this.html.Info, tag = this.html.maintags.info){
-            let t = (status == "planned")?("Запланировано"):((status == "watching")?("Смотрю"):((status == "completed")?("Просмотрено"):((status == "rewatching")?("Пересматриваю"):((status == "dropped")?("Брошено"):("Отложено")))));
+        ShowStatus: function (status = "", html = this.html.Info, tag = this.html.maintags.info) {
+            let t = (status == "planned") ? ("Запланировано") : ((status == "watching") ? ("Смотрю") : ((status == "completed") ? ("Просмотрено") : ((status == "rewatching") ? ("Пересматриваю") : ((status == "dropped") ? ("Брошено") : ("Отложено")))));
             let s = $(tag);
-            if(s.length == 0 && status != ""){
+            if (s.length == 0 && status != "") {
                 $(`.poster-block`).after(html);
                 $(`.shikimori-info-status > div:nth-child(1) > span:nth-child(1)`).html(t);
-            }else if (status != ""){
+            } else if (status != "") {
                 $(`.shikimori-info-status > div:nth-child(1) > span:nth-child(1)`).html(t);
-            }else if (status == ""){
+            } else if (status == "") {
                 s.remove();
             }
         },
 
-        ShowEpisode : function(episode = 0){
-            if(episode != 0){
+        ShowEpisode: function (episode = 0) {
+            if (episode != 0) {
                 yummy.SetVideoShow(episode);
             }
         }
@@ -558,54 +569,102 @@
     let globPrec = 0;//Percentage allo anime
     let nameSelec = 0;//Selected name
 
-    $(document).ready(async()=>{
+    $(document).ready(async () => {
         yummy = new Yummyanime();
-        if(!yummy.IsPageAnime){
+        if (!yummy.IsPageAnime) {
             return;
         }
         ScriptPercentage();
         preAnime = await shikimori.Request.GETasync(`/api/animes?search=${yummy.Name}`);
         anime = await shikimori.Request.GETasync(`/api/animes/${preAnime[0].id}`);
-        CompliancePercentage();
+        CompliancePercentage(anime.russian, yummy.Name);
         await sleep(100);
-        let i = setInterval(async ()=>{
-            if(globPrec > 52){
-                clearInterval(i);
-                //console.log(anime);
-                Main()//Success find anime
-            }else{
-                preAnime = await shikimori.Request.GETasync(`/api/animes?search=${yummy.Names[nameSelec]}`);
-                anime = await shikimori.Request.GETasync(`/api/animes/${preAnime[0].id}`);
-                nameSelec++;
-            }
-            await CompliancePercentage();
-        },400);
+        let find = await FindAnime();
+        if(find){
+            Main();
+            console.log(anime);
+        }else{
+            alert("Sorry I`m not found anime");
+        }
     });
 
-    function Main(){
+    function FindAnime() {
+        return new Promise(async (resolve) => {
+            let date = "/api/animes"
+            let year = yummy.Year;
+            date += (year) ? `&season=${year}` : "";
+
+
+            for (let index = 0; index < yummy.Names.length; index++) {
+                if (globPrec > 52) {
+                    resolve(true)
+                    return;
+                } else {
+                    preAnime = await shikimori.Request.GETasync(`/api/animes?search=${yummy.Names[index]}${date}`);
+                    anime = await shikimori.Request.GETasync(`/api/animes/${preAnime[0].id}`);
+                    if (/[a-zA-Z]/.test(yummy.Names[index])) {
+                        CompliancePercentage(anime.name, yummy.Names[index]);
+                    } else {
+                        CompliancePercentage(anime.russian, yummy.Names[index]);
+                    }
+                }
+            }
+            if(globPrec > 52){
+                resolve(true);
+                return;
+            }else{
+                resolve(false);
+                return;
+            }
+        });
+
+
+
+
+        // return new Promise(async (resolve) => {
+        //     for (let index = 0; index < yummy.Names.length; index++) {
+        //         if (globPrec > 52) {
+        //             resolve(true)
+        //             console.log(anime);
+        //         } else {
+        //             preAnime = await shikimori.Request.GETasync(`/api/animes?search=${yummy.Names[index]}`);
+        //             anime = await shikimori.Request.GETasync(`/api/animes/${preAnime[0].id}`);
+        //             if (/[a-zA-Z]/.test(yummy.Names[index])) {
+        //                 CompliancePercentage(anime.name, yummy.Names[index]);
+        //             } else {
+        //                 CompliancePercentage(anime.russian, yummy.Names[index]);
+        //             }
+        //             console.log(yummy.Names[index]);
+        //         }
+        //     }
+        //     resolve(false);
+        // });
+    }
+
+    function Main() {
         ShikimoriCritick();
         shikimori.Events.Auth.Subscribe(Loginned);
         shikimori.TryAuthorizate();
     }
 
-    function Loginned(e){
-        if(e == true){
+    function Loginned(e) {
+        if (e == true) {
             Authorization.Dispose(true);
             Authorization.Show(false, Authorization.html1);
-            Authorization.MyFunction(()=>{
+            Authorization.MyFunction(() => {
                 shikimori.Logout();
             });
             UserProfile.Show();
             AccessLogin();
-        }else{
+        } else {
             Authorization.Show(true);
         }
     }
 
     ///If you logined in shikimori
-    async function AccessLogin(){
-        shikimori.User.GET('/api/users/whoami', async (d,s)=>{
-            if (s == "success"){user = d};
+    async function AccessLogin() {
+        shikimori.User.GET('/api/users/whoami', async (d, s) => {
+            if (s == "success") { user = d };
             //console.log(user);
             UserProfile.Name(user.nickname);
             await sleep(500);
@@ -613,9 +672,9 @@
         });
     }
 
-    function GetAnimeList(){
-        shikimori.User.GET(`/api/v2/user_rates?user_id=${user.id}&target_id=${anime.id}&target_type=Anime`, (d,s)=>{
-            if(s == "success"){
+    function GetAnimeList() {
+        shikimori.User.GET(`/api/v2/user_rates?user_id=${user.id}&target_id=${anime.id}&target_type=Anime`, (d, s) => {
+            if (s == "success") {
                 animeinlist = d;
                 AnimeList();
 
@@ -629,9 +688,9 @@
 
     let searchResult = false;
 
-    function SearchAnime(){
-        $(`div.search-block-wrapper:nth-child(1) > form:nth-child(1) > input:nth-child(1)`).click( async ()=>{
-            if(searchResult){
+    function SearchAnime() {
+        $(`div.search-block-wrapper:nth-child(1) > form:nth-child(1) > input:nth-child(1)`).click(async () => {
+            if (searchResult) {
                 return;
             }
             searchResult = true;
@@ -640,74 +699,80 @@
             for (let index = 0; index < data.length; index++) {
                 let a = await shikimori.Request.GETasync(`/api/animes/${data[index].target_id}`);
                 let y = await yummy.SearchAnimeAsync(a.russian);
-                if(y.animes){
+                if (y.animes) {
                     $(`div.search-block-wrapper:nth-child(1) > div:nth-child(2)`).append(`<a href="https://yummyanime.club/catalog/item/${y.animes.data[0].alias}" class="shikimori-search-result" style="background: #1a1a1a;color: #fff;border-radius: 3px;border: 1px solid #1f539f; margin-bottom: 3px;">${a.russian}</a>`);
                 }
                 await sleep(300);
             }
         });
-        $(`.content-page`).click(()=>{
-            if(!searchResult){
+        $(`.content-page`).click(() => {
+            if (!searchResult) {
                 return;
             }
             searchResult = false;
             $(`div.search-block-wrapper:nth-child(1) > div:nth-child(2)`).removeClass(`open`);
-            $(`.shikimori-search-result`).toArray().forEach((e)=>{
+            $(`.shikimori-search-result`).toArray().forEach((e) => {
                 $(e).remove();
             });
         });
     }
 
-    function UpdateWatchEpisode(){
-        yummy.EventChangeVideo((obj)=>{
-            if(anime.episodes > yummy.Episode && !Array.isArray(animeinlist) && animeinlist.status != "completed"){
-                if(animeinlist.status == "planned"){
+    function UpdateWatchEpisode() {
+        yummy.EventChangeVideo((obj) => {
+            if (anime.episodes > yummy.Episode && !Array.isArray(animeinlist) && animeinlist.status != "completed") {
+                if (animeinlist.status == "planned") {
                     let dialog = confirm("Хотите изменить стату на 'Смотрю'? Что начался подсчет серий");
-                    if(dialog){
-                        shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                            user_id: user.id,
-                            target_id: anime.id,
-                            target_type: "Anime",
-                            episodes: yummy.Episode,
-                            status: "watching"
-                        }}, (d,s)=>{
-                            if(s == "success"){
+                    if (dialog) {
+                        shikimori.User.POST('/api/v2/user_rates', {
+                            "user_rate": {
+                                user_id: user.id,
+                                target_id: anime.id,
+                                target_type: "Anime",
+                                episodes: yummy.Episode,
+                                status: "watching"
+                            }
+                        }, (d, s) => {
+                            if (s == "success") {
                                 animeinlist = d;
                                 //console.log(animeinlist);
                                 AnimeStatus.Dispose(AnimeStatus.html.maintags.remove);
                                 AnimeStatus.Dispose(AnimeStatus.html.maintags.startwatch);
                                 AnimeList();
-                                AnimeStatus.ShowEpisode((Array.isArray(animeinlist))?0:animeinlist.episodes);
+                                AnimeStatus.ShowEpisode((Array.isArray(animeinlist)) ? 0 : animeinlist.episodes);
                             }
                         });
-                    }else{
+                    } else {
                         return;
                     }
                 }
-                shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                    user_id: user.id,
-                    target_id: anime.id,
-                    target_type: "Anime",
-                    episodes: yummy.Episode
-                }}, (d,s)=>{if(s == "success"){animeinlist = d; AnimeStatus.ShowEpisode((Array.isArray(animeinlist))?0:animeinlist.episodes);}});
+                shikimori.User.POST('/api/v2/user_rates', {
+                    "user_rate": {
+                        user_id: user.id,
+                        target_id: anime.id,
+                        target_type: "Anime",
+                        episodes: yummy.Episode
+                    }
+                }, (d, s) => { if (s == "success") { animeinlist = d; AnimeStatus.ShowEpisode((Array.isArray(animeinlist)) ? 0 : animeinlist.episodes); } });
             }
         });
         yummy.StartEvents();
     }
 
-    function AnimeList(){
-        animeinlist = (Array.isArray(animeinlist))?((animeinlist.length == 0)?animeinlist:animeinlist[0]):animeinlist;
+    function AnimeList() {
+        animeinlist = (Array.isArray(animeinlist)) ? ((animeinlist.length == 0) ? animeinlist : animeinlist[0]) : animeinlist;
         console.log(animeinlist);
-        if(animeinlist.length == 0){ // Add to list
+        if (animeinlist.length == 0) { // Add to list
             AnimeStatus.Show();
-            AnimeStatus.Control(()=>{
-                shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                    user_id: user.id,
-                    target_id: anime.id,
-                    target_type: "Anime",
-                    status: "planned"
-                }}, (d,s)=>{
-                    if(s == "success"){
+            AnimeStatus.Control(() => {
+                shikimori.User.POST('/api/v2/user_rates', {
+                    "user_rate": {
+                        user_id: user.id,
+                        target_id: anime.id,
+                        target_type: "Anime",
+                        status: "planned"
+                    }
+                }, (d, s) => {
+                    if (s == "success") {
                         animeinlist = d;
                         //console.log(animeinlist);
                         AnimeStatus.Dispose();
@@ -715,18 +780,20 @@
                     }
                 });
             });
-        }else if(animeinlist.status == "planned"){ //Start watch and remove
+        } else if (animeinlist.status == "planned") { //Start watch and remove
             AnimeStatus.Show(AnimeStatus.html.StartWatch);
             AnimeStatus.Show(AnimeStatus.html.Remove);
 
-            AnimeStatus.Control(()=>{ // Start Watch (watching)
-                shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                    user_id: user.id,
-                    target_id: anime.id,
-                    target_type: "Anime",
-                    status: "watching"
-                }}, (d,s)=>{
-                    if(s == "success"){
+            AnimeStatus.Control(() => { // Start Watch (watching)
+                shikimori.User.POST('/api/v2/user_rates', {
+                    "user_rate": {
+                        user_id: user.id,
+                        target_id: anime.id,
+                        target_type: "Anime",
+                        status: "watching"
+                    }
+                }, (d, s) => {
+                    if (s == "success") {
                         animeinlist = d;
                         //console.log(animeinlist);
                         AnimeStatus.Dispose(AnimeStatus.html.maintags.remove);
@@ -736,9 +803,9 @@
                 });
             }, AnimeStatus.html.maintags.startwatch);
 
-            AnimeStatus.Control(()=>{ // Remove
+            AnimeStatus.Control(() => { // Remove
                 shikimori.User.DELETE(`/api/v2/user_rates/${animeinlist.id}`, (response) => {
-                    if(response.status == 204){
+                    if (response.status == 204) {
                         animeinlist = [];
                         AnimeStatus.Dispose(AnimeStatus.html.maintags.remove);
                         AnimeStatus.Dispose(AnimeStatus.html.maintags.startwatch);
@@ -746,19 +813,21 @@
                     }
                 });
             }, AnimeStatus.html.maintags.remove);
-        }else if(animeinlist.status == "watching"){//Satrt Completed and dropped
+        } else if (animeinlist.status == "watching") {//Satrt Completed and dropped
 
             AnimeStatus.Show(AnimeStatus.html.Completed);
             AnimeStatus.Show(AnimeStatus.html.Dropped);
 
-            AnimeStatus.Control(()=>{ // Completed watch anime
-                shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                    user_id: user.id,
-                    target_id: anime.id,
-                    target_type: "Anime",
-                    status: "completed"
-                }}, (d,s)=>{
-                    if(s == "success"){
+            AnimeStatus.Control(() => { // Completed watch anime
+                shikimori.User.POST('/api/v2/user_rates', {
+                    "user_rate": {
+                        user_id: user.id,
+                        target_id: anime.id,
+                        target_type: "Anime",
+                        status: "completed"
+                    }
+                }, (d, s) => {
+                    if (s == "success") {
                         animeinlist = d;
                         //console.log(animeinlist);
                         AnimeStatus.Dispose(AnimeStatus.html.maintags.completed);
@@ -767,16 +836,18 @@
                     }
                 });
             }, AnimeStatus.html.maintags.completed);
-            
 
-            AnimeStatus.Control(()=>{// Dropped watch anime
-                shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                    user_id: user.id,
-                    target_id: anime.id,
-                    target_type: "Anime",
-                    status: "dropped"
-                }}, (d,s)=>{
-                    if(s == "success"){
+
+            AnimeStatus.Control(() => {// Dropped watch anime
+                shikimori.User.POST('/api/v2/user_rates', {
+                    "user_rate": {
+                        user_id: user.id,
+                        target_id: anime.id,
+                        target_type: "Anime",
+                        status: "dropped"
+                    }
+                }, (d, s) => {
+                    if (s == "success") {
                         animeinlist = d;
                         //console.log(animeinlist);
                         AnimeStatus.Dispose(AnimeStatus.html.maintags.completed);
@@ -785,17 +856,19 @@
                     }
                 });
             }, AnimeStatus.html.maintags.dropped);
-        } else if(animeinlist.status == "completed"){
+        } else if (animeinlist.status == "completed") {
 
             AnimeStatus.Show(AnimeStatus.html.Rewatch);
-            AnimeStatus.Control(()=>{
-                shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                    user_id: user.id,
-                    target_id: anime.id,
-                    target_type: "Anime",
-                    status: "rewatching"
-                }}, (d,s)=>{
-                    if(s == "success"){
+            AnimeStatus.Control(() => {
+                shikimori.User.POST('/api/v2/user_rates', {
+                    "user_rate": {
+                        user_id: user.id,
+                        target_id: anime.id,
+                        target_type: "Anime",
+                        status: "rewatching"
+                    }
+                }, (d, s) => {
+                    if (s == "success") {
                         animeinlist = d;
                         //console.log(animeinlist);
                         AnimeStatus.Dispose(AnimeStatus.html.maintags.rewatch);
@@ -803,17 +876,19 @@
                     }
                 });
             }, AnimeStatus.html.maintags.rewatch);
-        } else if(animeinlist.status == "rewatching"){
+        } else if (animeinlist.status == "rewatching") {
             AnimeStatus.Show(AnimeStatus.html.Completed);
 
-            AnimeStatus.Control(()=>{ // Completed watch anime
-                shikimori.User.POST('/api/v2/user_rates', {"user_rate":{
-                    user_id: user.id,
-                    target_id: anime.id,
-                    target_type: "Anime",
-                    status: "completed"
-                }}, (d,s)=>{
-                    if(s == "success"){
+            AnimeStatus.Control(() => { // Completed watch anime
+                shikimori.User.POST('/api/v2/user_rates', {
+                    "user_rate": {
+                        user_id: user.id,
+                        target_id: anime.id,
+                        target_type: "Anime",
+                        status: "completed"
+                    }
+                }, (d, s) => {
+                    if (s == "success") {
                         animeinlist = d;
                         //console.log(animeinlist);
                         AnimeStatus.Dispose(AnimeStatus.html.maintags.completed);
@@ -824,18 +899,18 @@
 
         }
 
-        AnimeStatus.ShowStatus((Array.isArray(animeinlist))?"":animeinlist.status);
-        AnimeStatus.ShowEpisode((Array.isArray(animeinlist))?0:animeinlist.episodes);
+        AnimeStatus.ShowStatus((Array.isArray(animeinlist)) ? "" : animeinlist.status);
+        AnimeStatus.ShowEpisode((Array.isArray(animeinlist)) ? 0 : animeinlist.episodes);
     }
 
-    function UpdateGlobPrec(i){
+    function UpdateGlobPrec(i) {
         globPrec = i.toFixed(3).replace(/\.0+$/, "");
         $(`.script-prectengle > div:nth-child(1) > div:nth-child(1)`).html(`${globPrec}%`);
     }
 
-    function ScriptPercentage(){
+    function ScriptPercentage() {
         UI();
-        function UI(){
+        function UI() {
             $(`.poster-block`).append(`
                 <div class="script-prectengle">
                     <div>
@@ -900,9 +975,9 @@
         }
     }
 
-    function ShikimoriCritick(){
+    function ShikimoriCritick() {
         UI();
-        function UI(){
+        function UI() {
             let c = 0;
             for (let index = 0; index < anime.rates_scores_stats.length; index++) {
                 c += anime.rates_scores_stats[index].value;
@@ -980,15 +1055,15 @@
         }
     }
 
-    async function CompliancePercentage(){
+    async function CompliancePercentage(shiki_name = "", yummy_name = "") {
         let all = 0;
         let perc = 25;
-        let i = levenshtein(anime.russian, yummy.Name);
-        i = (i != 0)?i:1;
-        all += perc/(i*100);
-        all += (anime.kind == yummy.Type)?(perc/(1*100)):(0);
-        all += (anime.status == yummy.Status)?(perc/(1*100)):(0);
-        all += (anime.episodes == yummy.Episodes)?(perc/(1*100)):(0);      
+        let i = levenshtein(shiki_name, yummy_name);
+        i = (i != 0) ? i : 1;
+        all += perc / (i * 100);
+        all += (anime.kind == yummy.Type) ? (perc / (1 * 100)) : (0);
+        all += (anime.status == yummy.Status) ? (perc / (1 * 100)) : (0);
+        all += (anime.episodes == yummy.Episodes) ? (perc / (1 * 100)) : (0);
         UpdateGlobPrec(all * 100);
     }
 
