@@ -45,6 +45,12 @@
 
 ```// @require https://code.jquery.com/jquery-3.6.0.min.js```
 
+## Обновления
+
+```1.1``` - Добавлена интеграгия при нажатии на поиск показывает список тех аниме которые находятся в списке ```"Запланированые"``` 
+
+```1.0``` - Начальный запуск скрипта
+
 # Скриншоты функция
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/episodes.png" />
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/login.png" />
