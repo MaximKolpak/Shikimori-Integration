@@ -1,6 +1,6 @@
 <p align="left">
     <a href="https://github.com/MaximKolpak/TunimeScript">
-        <img src="https://img.shields.io/badge/version-1.1-green.svg" />
+        <img src="https://img.shields.io/badge/version-1.2-green.svg" />
     </a>
     <a href="https://github.com/quoid/userscripts">
         <img src="https://img.shields.io/badge/GitHub-userscripts-lightgrey?style=flat&logo=github" />
@@ -46,6 +46,8 @@
 ```// @require https://code.jquery.com/jquery-3.6.0.min.js```
 
 ## Обновления
+
+```1.2``` - Поиск аниме теперь более точнее находит аниме из страницы. Исправлены баги с поиском.
 
 ```1.1``` - Добавлена интеграгия при нажатии на поиск показывает список тех аниме которые находятся в списке ```"Запланированые"``` 
 
