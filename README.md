@@ -47,13 +47,13 @@
 
 ## Обновления
 
-```1.2``` - Поиск аниме теперь более точнее находит аниме из страницы. Исправлены баги с поиском.
+```1.2``` - Поиск аниме теперь более точнее находит аниме из страницы. Исправлены баг с поиском.
 
 ```1.1``` - Добавлена интеграгия при нажатии на поиск показывает список тех аниме которые находятся в списке ```"Запланированые"``` 
 
 ```1.0``` - Начальный запуск скрипта
 
-# Скриншоты функция
+# Скриншоты функций
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/episodes.png" />
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/login.png" />
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/score.png" />
