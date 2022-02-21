@@ -10,7 +10,7 @@
     </a>
 </p>
 
-# Shikomiri-Integration
+# Shikimori-Integration
 
 <img src="https://raw.githubusercontent.com/MaximKolpak/Shikomiri-Integration/main/resource/poster.png" align="right"
      alt="Poster Integration Web" width="253" >
