@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shikimori Integration
 // @namespace    UserScripts
-// @version      1.2
+// @version      1.3
 // @description  helps to maintain a list of watched TV shows, with a nice visual part
 // @author       Anoncer (https://github.com/MaximKolpak)
 // @match        https://yummyanime.club/*
@@ -580,10 +580,10 @@
         CompliancePercentage(anime.russian, yummy.Name);
         await sleep(100);
         let find = await FindAnime();
-        if(find){
+        if (find) {
             Main();
-            console.log(anime);
-        }else{
+            //console.log(anime);
+        } else {
             alert("Sorry I`m not found anime");
         }
     });
@@ -609,10 +609,10 @@
                     }
                 }
             }
-            if(globPrec > 52){
+            if (globPrec > 52) {
                 resolve(true);
                 return;
-            }else{
+            } else {
                 resolve(false);
                 return;
             }
@@ -682,8 +682,54 @@
                 UpdateWatchEpisode();
                 //Subcribe from search anime focus
                 SearchAnime();
+                //Set Raiting Video
+                RaitingRange();
             }
         });
+    }
+
+    //If you watch anime Go To Raiting Add
+    function RaitingRange() {
+        if (animeinlist.status == "completed") {
+            if ($(`.raiting-shikimori`).length == 0) {
+                $(`.content-desc`).append(`
+                    <input class="raiting-shikimori" type="range" style="width:100%" list="tickmarks" min="0" max="10" step="1" value="${animeinlist.score}">
+                    <datalist id="tickmarks" style="display: flex;justify-content: space-between;margin-top: -15px;font-size: 13px;color: #676767;margin-right: 2px;margin-left: 5px;">
+                    <option value="0" label="0"> 
+                    <option value="1"> 
+                    <option value="2"> 
+                    <option value="3"> 
+                    <option value="4"> 
+                    <option value="5" label="5"> 
+                    <option value="6"> 
+                    <option value="7"> 
+                    <option value="8"> 
+                    <option value="9"> 
+                    <option value="10" label="10"> 
+                    </datalist>
+                `);
+                $(`.content-desc`).change(async (eventObject)=>{
+                    let value = eventObject.target.value;
+                    await sleep(1500);
+                    shikimori.User.POST('/api/v2/user_rates', {
+                        "user_rate": {
+                            user_id: user.id,
+                            target_id: anime.id,
+                            target_type: "Anime",
+                            score: value
+                        }
+                    }, (d,s)=>{if (s == "success") {animeinlist = d;}});
+                });
+            }else{
+                $(`.raiting-shikimori`).value(animeinlist.score);
+            }
+        }else{
+            if($(`.raiting-shikimori`).length != 0){
+                $(`.raiting-shikimori`).remove();
+                $(`#tickmarks`).remove();
+
+            }
+        }
     }
 
     let searchResult = false;
@@ -971,6 +1017,98 @@
                 border-radius: 5px;
                 box-shadow: 0px 0px 4px #1E59B0;
             }
+
+
+            .raiting-shikimori[type=range] {
+                height: 25px;
+                -webkit-appearance: none;
+                margin: 10px 0;
+                width: 100%;
+              }
+              .raiting-shikimori[type=range]:focus {
+                outline: none;
+              }
+              .raiting-shikimori[type=range]::-webkit-slider-runnable-track {
+                width: 100%;
+                height: 8px;
+                cursor: pointer;
+                animate: 0.2s;
+                box-shadow: 0px 0px 4px #1E59B0;
+                background: #1D2236;
+                border-radius: 50px;
+                border: 0px solid #000000;
+              }
+              .raiting-shikimori[type=range]::-webkit-slider-thumb {
+                box-shadow: 0px 0px 2px #000000;
+                border: 1px solid #1E59B0;
+                height: 18px;
+                width: 18px;
+                border-radius: 25px;
+                background: #1E59B0;
+                cursor: pointer;
+                -webkit-appearance: none;
+                margin-top: -5.5px;
+              }
+              .raiting-shikimori[type=range]:focus::-webkit-slider-runnable-track {
+                background: #1D2236;
+              }
+              .raiting-shikimori[type=range]::-moz-range-track {
+                width: 100%;
+                height: 8px;
+                cursor: pointer;
+                animate: 0.2s;
+                box-shadow: 0px 0px 4px #1E59B0;
+                background: #1D2236;
+                border-radius: 50px;
+                border: 0px solid #000000;
+              }
+              .raiting-shikimori[type=range]::-moz-range-thumb {
+                box-shadow: 0px 0px 2px #000000;
+                border: 1px solid #1E59B0;
+                height: 18px;
+                width: 18px;
+                border-radius: 25px;
+                background: #1E59B0;
+                cursor: pointer;
+              }
+              .raiting-shikimori[type=range]::-ms-track {
+                width: 100%;
+                height: 8px;
+                cursor: pointer;
+                animate: 0.2s;
+                background: transparent;
+                border-color: transparent;
+                color: transparent;
+              }
+              .raiting-shikimori[type=range]::-ms-fill-lower {
+                background: #1D2236;
+                border: 0px solid #000000;
+                border-radius: 100px;
+                box-shadow: 0px 0px 4px #1E59B0;
+              }
+              .raiting-shikimori[type=range]::-ms-fill-upper {
+                background: #1D2236;
+                border: 0px solid #000000;
+                border-radius: 100px;
+                box-shadow: 0px 0px 4px #1E59B0;
+              }
+              .raiting-shikimori[type=range]::-ms-thumb {
+                margin-top: 1px;
+                box-shadow: 0px 0px 2px #000000;
+                border: 1px solid #1E59B0;
+                height: 18px;
+                width: 18px;
+                border-radius: 25px;
+                background: #1E59B0;
+                cursor: pointer;
+              }
+              .raiting-shikimori[type=range]:focus::-ms-fill-lower {
+                background: #1D2236;
+              }
+              .raiting-shikimori[type=range]:focus::-ms-fill-upper {
+                background: #1D2236;
+              }
+              
             `);
         }
     }
