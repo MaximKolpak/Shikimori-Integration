@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Shikimori Integration
 // @namespace    UserScripts
-// @version      1.3
+// @version      1.4
 // @description  helps to maintain a list of watched TV shows, with a nice visual part
 // @author       Anoncer (https://github.com/MaximKolpak)
 // @match        https://yummyanime.club/*
@@ -617,28 +617,6 @@
                 return;
             }
         });
-
-
-
-
-        // return new Promise(async (resolve) => {
-        //     for (let index = 0; index < yummy.Names.length; index++) {
-        //         if (globPrec > 52) {
-        //             resolve(true)
-        //             console.log(anime);
-        //         } else {
-        //             preAnime = await shikimori.Request.GETasync(`/api/animes?search=${yummy.Names[index]}`);
-        //             anime = await shikimori.Request.GETasync(`/api/animes/${preAnime[0].id}`);
-        //             if (/[a-zA-Z]/.test(yummy.Names[index])) {
-        //                 CompliancePercentage(anime.name, yummy.Names[index]);
-        //             } else {
-        //                 CompliancePercentage(anime.russian, yummy.Names[index]);
-        //             }
-        //             console.log(yummy.Names[index]);
-        //         }
-        //     }
-        //     resolve(false);
-        // });
     }
 
     function Main() {
@@ -664,11 +642,14 @@
     ///If you logined in shikimori
     async function AccessLogin() {
         shikimori.User.GET('/api/users/whoami', async (d, s) => {
-            if (s == "success") { user = d };
-            //console.log(user);
-            UserProfile.Name(user.nickname);
-            await sleep(500);
-            GetAnimeList()
+            if (s == "success") {
+                user = d;
+                UserProfile.Name(user.nickname);
+                await sleep(500);
+                GetAnimeList();
+            }else{
+                console.log("Not Loggin");
+            }
         });
     }
 
@@ -708,7 +689,7 @@
                     <option value="10" label="10"> 
                     </datalist>
                 `);
-                $(`.content-desc`).change(async (eventObject)=>{
+                $(`.content-desc`).change(async (eventObject) => {
                     let value = eventObject.target.value;
                     await sleep(1500);
                     shikimori.User.POST('/api/v2/user_rates', {
@@ -718,13 +699,13 @@
                             target_type: "Anime",
                             score: value
                         }
-                    }, (d,s)=>{if (s == "success") {animeinlist = d;}});
+                    }, (d, s) => { if (s == "success") { animeinlist = d; } });
                 });
-            }else{
+            } else {
                 $(`.raiting-shikimori`).value(animeinlist.score);
             }
-        }else{
-            if($(`.raiting-shikimori`).length != 0){
+        } else {
+            if ($(`.raiting-shikimori`).length != 0) {
                 $(`.raiting-shikimori`).remove();
                 $(`#tickmarks`).remove();
 
@@ -733,6 +714,7 @@
     }
 
     let searchResult = false;
+    let searchStatus = "planned";
 
     function SearchAnime() {
         $(`div.search-block-wrapper:nth-child(1) > form:nth-child(1) > input:nth-child(1)`).click(async () => {
@@ -740,8 +722,9 @@
                 return;
             }
             searchResult = true;
-            let data = await shikimori.Request.GETasync(`/api/v2/user_rates?user_id=${user.id}&status=planned&limit=5`);
+            let data = await shikimori.Request.GETasync(`/api/v2/user_rates?user_id=${user.id}&status=${searchStatus}&limit=5`);
             $(`div.search-block-wrapper:nth-child(1) > div:nth-child(2)`).addClass(`open`);
+            $(`.shikimori-search-type`).addClass(`shikimori-search-type-show`);
             for (let index = 0; index < data.length; index++) {
                 let a = await shikimori.Request.GETasync(`/api/animes/${data[index].target_id}`);
                 let y = await yummy.SearchAnimeAsync(a.russian);
@@ -760,6 +743,30 @@
             $(`.shikimori-search-result`).toArray().forEach((e) => {
                 $(e).remove();
             });
+            $(`.shikimori-search-type`).removeClass(`shikimori-search-type-show`);
+        });
+
+        SearchType();
+    }
+
+    function SearchType(){
+        let t = $(`.shikimori-search-type`);
+        if(t.length < 0){
+
+        }else{
+            $(`div.search-block-wrapper:nth-child(1) > form:nth-child(1)`).append(`<div class="shikimori-search-type" style="position: absolute;right: 50px;display: flex;align-items: center;justify-content: left;top: 10px;bottom: 10px;background: #1A1A1A;color: white;padding: 0 10px;border-radius: 4px;cursor: pointer;font-family: 'Roboto';font-size: 14px;border: 2px solid #1E59B0;text-overflow: ellipsis;overflow: hidden;transition: .3s ease-in-out;">Запланировано</div>`);
+            t = $(`.shikimori-search-type`);
+            GM_addStyle(`@media screen and (max-width:350px){.shikimori-search-type-show {width: 30px;}}`);
+        }
+        t.click(()=>{
+            searchStatus = (searchStatus == "planned")?"watching":"planned";
+            t.html((searchStatus == "planned")?"Запланировано":"Смотрю");
+            $(`div.search-block-wrapper:nth-child(1) > div:nth-child(2)`).removeClass(`open`);
+            $(`.shikimori-search-result`).toArray().forEach((e) => {
+                $(e).remove();
+            });
+            searchResult = false;
+            $(`.shikimori-search-type`).removeClass(`shikimori-search-type-show`);
         });
     }
 

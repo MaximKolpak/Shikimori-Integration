@@ -1,6 +1,6 @@
 <p align="left">
     <a href="https://github.com/MaximKolpak/TunimeScript">
-        <img src="https://img.shields.io/badge/version-1.3-green.svg" />
+        <img src="https://img.shields.io/badge/version-1.4-green.svg" />
     </a>
     <a href="https://github.com/quoid/userscripts">
         <img src="https://img.shields.io/badge/GitHub-userscripts-lightgrey?style=flat&logo=github" />
@@ -29,7 +29,7 @@
     - Изменение статуса аниме аниме
     - Отметка просмотренных епизодов 
     - Отоброжать на каком епизоде остановились
-    - В поиске отображать аниме в списке ("Запланировано")
+    - В поиске отображать аниме из списка
     - Возможность ставить оценку
 
 Все эти функции будут доступны после авторизации Скрипта в [Shikimori](https://shikimori.one/)
@@ -47,6 +47,8 @@
 ```// @require https://code.jquery.com/jquery-3.6.0.min.js```
 
 ## Обновления
+
+```1.4 [23.02.2022]``` - Дополнение к обновлению ```1.1```, теперь можно указать какой список вывести: ```Запланировано``` или ```Смотрю```
 
 ```1.3 [21.02.2022]``` - Было добавлена возможность ставить оценку аниме не переходя на сайт Shikimori. Оценку можно ставить только тем у кого статус ```Просмотрено```
 
